@@ -1,0 +1,16 @@
+# Local development overrides — auto-merged by `docker compose up`.
+# Jenkins uses `docker compose -f docker-compose.yml up -d` to exclude this file.
+services:
+  auth-service:
+    build:
+      context: ./services/auth-service
+    image: auth-service:local
+
+  api-service:
+    build:
+      context: ./services/api-service
+    image: api-service:local
+
+  postgres:
+    ports:
+      - "5432:5432"

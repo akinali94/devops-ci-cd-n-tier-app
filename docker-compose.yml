@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/db-init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    image: auth-service:${IMAGE_TAG:-latest}
+    container_name: auth-service
+    restart: unless-stopped
+    environment:
+      DB_URL: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/auth_db?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: "8081"
+    ports:
+      - "8081:8081"
+    networks:
+      - app-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api-service:
+    image: api-service:${IMAGE_TAG:-latest}
+    container_name: api-service
+    restart: unless-stopped
+    environment:
+      DB_URL: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/tasks_db?sslmode=disable
+      AUTH_SERVICE_URL: http://auth-service:8081
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - app-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+
+networks:
+  app-net:
+    driver: bridge
+
+volumes:
+  postgres-data:

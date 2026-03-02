@@ -1,1 +1,5 @@
 CLAUDE.md
+.env
+.env.example
+scripts/ec2-setup.sh
+Makefile
