@@ -22,7 +22,7 @@ func main() {
 
 	dbURL := mustEnv("DB_URL")
 	authServiceURL := mustEnv("AUTH_SERVICE_URL")
-	port := getEnv("PORT", "8080")
+	port := getEnv("PORT", "8090")
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {

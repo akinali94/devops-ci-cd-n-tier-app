@@ -39,9 +39,9 @@ services:
     environment:
       DB_URL: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/tasks_db?sslmode=disable
       AUTH_SERVICE_URL: http://auth-service:8081
-      PORT: "8080"
+      PORT: "8090"
     ports:
-      - "8080:8080"
+      - "8090:8090"
     networks:
       - app-net
     depends_on:
